@@ -1,11 +1,5 @@
 export const config = {
   runner: 'local',
-
-  // Instruct WebdriverIO to connect directly to the driver's local port
-  hostname: 'localhost',
-  port: 9515,
-  path: '/',
-
   specs: ['./test/specs/**/*.spec.js'],
   exclude: [],
   maxInstances: 10,
