@@ -1,3 +1,4 @@
+import allureReporter from '@wdio/allure-reporter';
 import inventoryPage from '../pageobjects/inventory.page.js';
 import cartPage from '../pageobjects/cart.page.js';
 import checkout1Page from '../pageobjects/checkout1.page.js';
@@ -59,6 +60,11 @@ describe('Test Case Objective: Checkout', () => {
   });
 
   it('009 - Checkout without products. Should not allow checkout with empty cart', async () => {
+    allureReporter.addIssue('BUG-009');
+    allureReporter.addDescription(
+      'This test fails currently because the system allows checkout with an empty cart. ' +
+        'Expected behavior: user stays on the Cart page and sees an error message.',
+    );
     await expect(inventoryPage.title).toHaveText('Products');
     await expect(await inventoryPage.getCurrentUrl()).toContain('/inventory');
 
@@ -71,14 +77,14 @@ describe('Test Case Objective: Checkout', () => {
 
     await cartPage.goToCheckout1();
 
-    // Changed checks: confirming that the site is mistakenly letting you through
-    await expect(checkout1Page.title).toHaveText('Checkout: Your Information');
-    await expect(await checkout1Page.getCurrentUrl()).toContain('/checkout-step-one');
+    // The fragments of the cat are empty, and our culprits will be lost at the end of the cat.
+    // Going to '/checkout-step-one' is NOT responsible for waking up.
+    await expect(cartPage.title).toHaveText('Your Cart');
+    await expect(await cartPage.getCurrentUrl()).not.toContain('/checkout-step-one');
 
-    // Note: The original test expected an error message about the cart being empty,
-    // but the current behavior allows proceeding to checkout.
-
-    // await expect(cartPage.title).toHaveText('Your Cart');
-    // await expect(cartPage.errorMsg).toHaveTextContaining('Cart is empty');
+    // Check for an error message
+    // (Make sure the errorMsg locator is correctly defined in cart.page.js)
+    await expect(cartPage.errorMsg).toBeDisplayed();
+    await expect(cartPage.errorMsg).toHaveTextContaining('Cart is empty');
   });
 });
