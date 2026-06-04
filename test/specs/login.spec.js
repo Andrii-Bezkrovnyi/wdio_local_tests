@@ -1,6 +1,12 @@
 import loginPage from '../pageobjects/login.page.js';
 import inventoryPage from '../pageobjects/inventory.page.js';
-import { EXPECTED_MENU, loginData } from '../fixtures/test.data.js';
+import {
+  EXPECTED_MENU,
+  loginData,
+  ERROR_MESSAGES,
+  URLS,
+  PAGES_TITLES,
+} from '../fixtures/test.data.js';
 
 describe('Test Case Objective: Login', () => {
   it('001 - should login successfully with valid credentials', async () => {
@@ -12,8 +18,8 @@ describe('Test Case Objective: Login', () => {
     await expect(loginPage.inputPassword).not.toHaveValue('');
 
     await loginPage.clickLogin();
-    await expect(inventoryPage.title).toHaveText('Products');
-    await expect(await inventoryPage.getCurrentUrl()).toContain('/inventory');
+    await expect(inventoryPage.title).toHaveText(PAGES_TITLES.PRODUCTS);
+    await expect(await inventoryPage.getCurrentUrl()).toContain(URLS.INVENTORY);
   });
 
   it('002-1 - should show error message with invalid password', async () => {
@@ -26,14 +32,12 @@ describe('Test Case Objective: Login', () => {
     await loginPage.clickLogin();
 
     await expect(loginPage.errorBanner).toBeDisplayed();
-    await expect(loginPage.errorBanner).toHaveText(
-      'Epic sadface: Username and password do not match any user in this service',
-    );
+    await expect(loginPage.errorBanner).toHaveText(ERROR_MESSAGES.INVALID_CREDENTIALS);
 
     await expect(loginPage.usernameXIcon).toBeDisplayed();
     await expect(loginPage.passwordXIcon).toBeDisplayed();
 
-    await expect(browser).toHaveUrl(browser.options.baseUrl + '/');
+    await expect(browser).toHaveUrl(browser.options.baseUrl + URLS.BASE);
   });
 
   it('002-2 - should show error message with invalid username', async () => {
@@ -46,9 +50,7 @@ describe('Test Case Objective: Login', () => {
     await loginPage.clickLogin();
 
     await expect(loginPage.errorBanner).toBeDisplayed();
-    await expect(loginPage.errorBanner).toHaveText(
-      'Epic sadface: Username and password do not match any user in this service',
-    );
+    await expect(loginPage.errorBanner).toHaveText(ERROR_MESSAGES.INVALID_CREDENTIALS);
 
     await expect(loginPage.usernameXIcon).toBeDisplayed();
     await expect(loginPage.passwordXIcon).toBeDisplayed();
@@ -61,7 +63,7 @@ describe('Test Case Objective: Login', () => {
       expect.stringContaining('error'),
     );
 
-    await expect(browser).toHaveUrl(browser.options.baseUrl + '/');
+    await expect(browser).toHaveUrl(browser.options.baseUrl + URLS.BASE);
   });
 
   it('003 - Login with locked out test login', async () => {
@@ -69,16 +71,14 @@ describe('Test Case Objective: Login', () => {
     await loginPage.login(loginData.lockedOut.username, loginData.lockedOut.password);
 
     await expect(loginPage.errorLockedUser).toBeDisplayed();
-    await expect(loginPage.errorLockedUser).toHaveText(
-      'Epic sadface: Sorry, this user has been locked out.',
-    );
+    await expect(loginPage.errorLockedUser).toHaveText(ERROR_MESSAGES.LOCKED_OUT);
   });
 
   it('004 - should redirect to login page after logout', async () => {
     await loginPage.open();
     await loginPage.login(loginData.valid.username, loginData.valid.password);
-    await expect(inventoryPage.title).toHaveText('Products');
-    await expect(await inventoryPage.getCurrentUrl()).toContain('/inventory');
+    await expect(inventoryPage.title).toHaveText(PAGES_TITLES.PRODUCTS);
+    await expect(await inventoryPage.getCurrentUrl()).toContain(URLS.INVENTORY);
 
     await inventoryPage.openMenu();
     await expect(inventoryPage.menuItems).toBeElementsArrayOfSize(4);
@@ -89,7 +89,7 @@ describe('Test Case Objective: Login', () => {
     expect(actual).toEqual(EXPECTED_MENU);
 
     await inventoryPage.logout();
-    await expect(browser).toHaveUrl(browser.options.baseUrl + '/');
+    await expect(browser).toHaveUrl(browser.options.baseUrl + URLS.BASE);
     await expect(loginPage.inputUsername).toHaveValue('');
     await expect(loginPage.inputPassword).toHaveValue('');
   });

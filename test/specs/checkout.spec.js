@@ -4,15 +4,22 @@ import cartPage from '../pageobjects/cart.page.js';
 import checkout1Page from '../pageobjects/checkout1.page.js';
 import checkout2Page from '../pageobjects/checkout2.page.js';
 import checkoutCompletePage from '../pageobjects/checkout-complete.page.js';
-import { generateCustomer, itemDataTest } from '../fixtures/test.data.js';
+import {
+  generateCustomer,
+  itemDataTest,
+  URLS,
+  PAGES_TITLES,
+  MESSAGES,
+  ERROR_MESSAGES,
+} from '../fixtures/test.data.js';
 import { login } from '../helpers/diff.help.js';
 
 describe('Test Case Objective: Checkout', () => {
   beforeEach(async () => login());
 
   it('008 - should complete checkout successfully with valid data', async () => {
-    await expect(inventoryPage.title).toHaveText('Products');
-    await expect(await inventoryPage.getCurrentUrl()).toContain('/inventory');
+    await expect(inventoryPage.title).toHaveText(PAGES_TITLES.PRODUCTS);
+    await expect(await inventoryPage.getCurrentUrl()).toContain(URLS.INVENTORY);
 
     const product = await inventoryPage.addItemToCart(itemDataTest);
 
@@ -20,15 +27,15 @@ describe('Test Case Objective: Checkout', () => {
     await expect(await inventoryPage.getCartItemCount()).toBe('1');
 
     await inventoryPage.openCart();
-    await expect(cartPage.title).toHaveText('Your Cart');
-    await expect(await inventoryPage.getCurrentUrl()).toContain('/cart');
+    await expect(cartPage.title).toHaveText(PAGES_TITLES.CART);
+    await expect(await inventoryPage.getCurrentUrl()).toContain(URLS.CART);
 
     const productInCart = await cartPage.getProductDataByTitleDataTest(itemDataTest);
     await expect(productInCart.name).toBe(product.name);
 
     await cartPage.goToCheckout1();
-    await expect(checkout1Page.title).toHaveText('Checkout: Your Information');
-    await expect(await checkout1Page.getCurrentUrl()).toContain('/checkout-step-one');
+    await expect(checkout1Page.title).toHaveText(PAGES_TITLES.CHECKOUT_STEP_1);
+    await expect(await checkout1Page.getCurrentUrl()).toContain(URLS.CHECKOUT_STEP_1);
 
     const customer = generateCustomer();
     await checkout1Page.setFirstName(customer.firstName);
@@ -41,21 +48,23 @@ describe('Test Case Objective: Checkout', () => {
     await expect(checkout1Page.zipFld).toHaveValue(customer.zip);
 
     await checkout1Page.goToCheckOut2();
-    await expect(checkout2Page.title).toHaveText('Checkout: Overview');
-    await expect(await checkout2Page.getCurrentUrl()).toContain('/checkout-step-two');
+    await expect(checkout2Page.title).toHaveText(PAGES_TITLES.CHECKOUT_STEP_2);
+    await expect(await checkout2Page.getCurrentUrl()).toContain(URLS.CHECKOUT_STEP_2);
 
     const productInOverview = await checkout2Page.getProductDataByTitleDataTest(itemDataTest);
     await expect(productInOverview.name).toBe(product.name);
-    await expect(checkout2Page.itemTotalWOTax).toHaveText(`Item total: $${product.price}`);
+    await expect(checkout2Page.itemTotalWOTax).toHaveText(
+      `${MESSAGES.ITEM_TOTAL_PREFIX}${product.price}`,
+    );
 
     await checkout2Page.finishBtnClick();
-    await expect(checkoutCompletePage.title).toHaveText('Checkout: Complete!');
-    await expect(await checkoutCompletePage.getCurrentUrl()).toContain('/checkout-complete');
-    await expect(checkoutCompletePage.completeHeader).toHaveText('Thank you for your order!');
+    await expect(checkoutCompletePage.title).toHaveText(PAGES_TITLES.CHECKOUT_COMPLETE);
+    await expect(await checkoutCompletePage.getCurrentUrl()).toContain(URLS.CHECKOUT_COMPLETE);
+    await expect(checkoutCompletePage.completeHeader).toHaveText(MESSAGES.ORDER_COMPLETE_HEADER);
 
     await checkoutCompletePage.backHomeBtnClick();
-    await expect(inventoryPage.title).toHaveText('Products');
-    await expect(await inventoryPage.getCurrentUrl()).toContain('/inventory');
+    await expect(inventoryPage.title).toHaveText(PAGES_TITLES.PRODUCTS);
+    await expect(await inventoryPage.getCurrentUrl()).toContain(URLS.INVENTORY);
     await expect(inventoryPage.shoppingCartBadge).not.toBeExisting();
   });
 
@@ -65,12 +74,12 @@ describe('Test Case Objective: Checkout', () => {
       'This test fails currently because the system allows checkout with an empty cart. ' +
         'Expected behavior: user stays on the Cart page and sees an error message.',
     );
-    await expect(inventoryPage.title).toHaveText('Products');
-    await expect(await inventoryPage.getCurrentUrl()).toContain('/inventory');
+    await expect(inventoryPage.title).toHaveText(PAGES_TITLES.PRODUCTS);
+    await expect(await inventoryPage.getCurrentUrl()).toContain(URLS.INVENTORY);
 
     await inventoryPage.openCart();
-    await expect(cartPage.title).toHaveText('Your Cart');
-    await expect(await inventoryPage.getCurrentUrl()).toContain('/cart');
+    await expect(cartPage.title).toHaveText(PAGES_TITLES.CART);
+    await expect(await inventoryPage.getCurrentUrl()).toContain(URLS.CART);
 
     const items = await cartPage.cartItems;
     expect(items.length).toBe(0);
@@ -79,12 +88,12 @@ describe('Test Case Objective: Checkout', () => {
 
     // The fragments of the cat are empty, and our culprits will be lost at the end of the cat.
     // Going to '/checkout-step-one' is NOT responsible for waking up.
-    await expect(cartPage.title).toHaveText('Your Cart');
-    await expect(await cartPage.getCurrentUrl()).not.toContain('/checkout-step-one');
+    await expect(cartPage.title).toHaveText(PAGES_TITLES.CART);
+    await expect(await cartPage.getCurrentUrl()).not.toContain(URLS.CHECKOUT_STEP_1);
 
     // Check for an error message
     // (Make sure the errorMsg locator is correctly defined in cart.page.js)
     await expect(cartPage.errorMsg).toBeDisplayed();
-    await expect(cartPage.errorMsg).toHaveTextContaining('Cart is empty');
+    await expect(cartPage.errorMsg).toHaveTextContaining(ERROR_MESSAGES.EMPTY_CART);
   });
 });
