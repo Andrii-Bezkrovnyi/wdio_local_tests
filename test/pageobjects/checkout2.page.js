@@ -11,6 +11,12 @@ class Checkout2Page extends Page {
   get itemTotalWOTax() {
     return $('[data-test="subtotal-label"]');
   }
+  get itemNameSelector() {
+    return '.inventory_item_name';
+  }
+  get itemPriceSelector() {
+    return '.inventory_item_price';
+  }
 
   async getProductContainerByItemTitleDataTest(dataTest) {
     return $(`//*[@data-test="${dataTest}"]/ancestor::div[contains(@class,"cart_item_label")]`);
@@ -20,8 +26,8 @@ class Checkout2Page extends Page {
     const container = await this.getProductContainerByItemTitleDataTest(dataTest);
 
     return {
-      name: await container.$('.inventory_item_name').getText(),
-      price: removeDollarSign(await container.$('.inventory_item_price').getText()),
+      name: await container.$(this.itemNameSelector).getText(),
+      price: removeDollarSign(await container.$(this.itemPriceSelector).getText()),
     };
   }
 

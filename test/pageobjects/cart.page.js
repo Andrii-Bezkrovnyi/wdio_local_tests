@@ -7,8 +7,11 @@ class CartPage extends Page {
   get checkOutBtn() {
     return $('[data-test="checkout"]');
   }
-  get inventoryItemName() {
-    return $('.inventory_item_name');
+  get itemNameSelector() {
+    return '.inventory_item_name';
+  }
+  get itemPriceSelector() {
+    return '.inventory_item_price';
   }
   get cartItems() {
     return $$('.cart_item');
@@ -25,8 +28,8 @@ class CartPage extends Page {
     const container = await this.getProductContainerByItemTitleDataTest(dataTest);
 
     return {
-      name: await container.$('.inventory_item_name').getText(),
-      price: await container.$('.inventory_item_price').getText(),
+      name: await container.$(this.itemNameSelector).getText(),
+      price: await container.$(this.itemPriceSelector).getText(),
     };
   }
 
