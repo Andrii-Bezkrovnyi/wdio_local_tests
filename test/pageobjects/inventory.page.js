@@ -5,14 +5,41 @@ class InventoryPage extends Page {
   get shoppingCartContainer() {
     return $('.shopping_cart_container');
   }
+
   get shoppingCartBadge() {
     return $('[data-test="shopping-cart-badge"]');
   }
+
   get sortDropdown() {
     return $('[data-test="product-sort-container"]');
   }
+
   get title() {
     return $('[data-test="title"]');
+  }
+
+  get itemPriceSelector() {
+    return '.inventory_item_price';
+  }
+
+  get itemPrices() {
+    return $$(this.itemPriceSelector);
+  }
+
+  get itemNameSelector() {
+    return '.inventory_item_name';
+  }
+
+  get itemNames() {
+    return $$(this.itemNameSelector);
+  }
+
+  get childAddToCartBtnSelector() {
+    return '[data-test^="add-to-cart"]';
+  }
+
+  get inventorySelector() {
+    return 'inventory';
   }
 
   async getProductContainerByItemTitleDataTest(dataTest) {
@@ -23,9 +50,9 @@ class InventoryPage extends Page {
     const container = await this.getProductContainerByItemTitleDataTest(dataTest);
     await this.waitForElementDisplayed(container);
     return {
-      name: await container.$('.inventory_item_name').getText(),
-      price: removeDollarSign(await container.$('.inventory_item_price').getText()),
-      addToCartBtn: await container.$('[data-test^="add-to-cart"]'),
+      name: await container.$(this.itemNameSelector).getText(),
+      price: removeDollarSign(await container.$(this.itemPriceSelector).getText()),
+      addToCartBtn: await container.$(this.childAddToCartBtnSelector),
     };
   }
 
@@ -48,7 +75,7 @@ class InventoryPage extends Page {
   }
 
   async getAllPrices() {
-    const priceEls = await $$('.inventory_item_price');
+    const priceEls = await this.itemPrices;
     const prices = [];
     for (const el of priceEls) {
       const text = await el.getText();
@@ -58,7 +85,7 @@ class InventoryPage extends Page {
   }
 
   async getAllNames() {
-    const nameEls = await $$('.inventory_item_name');
+    const nameEls = await this.itemNames;
     const names = [];
     for (const el of nameEls) {
       names.push(await el.getText());
@@ -67,7 +94,7 @@ class InventoryPage extends Page {
   }
 
   open() {
-    return super.open('inventory');
+    return super.open(this.inventorySelector);
   }
 }
 
