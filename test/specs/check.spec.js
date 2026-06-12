@@ -1,5 +1,5 @@
-describe('Test Case Check entered data test', () => {
-  it('010 - should check page', async () => {
+describe('Test Case - Checking entered data test', () => {
+  it('010 - should check entered data on the page', async () => {
     // 1. Open the page with the form
     await browser.url('https://testpages.eviltester.com/apps/client-server-form-validation/submit');
 
