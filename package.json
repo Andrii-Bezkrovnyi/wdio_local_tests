@@ -20,6 +20,7 @@
     "test:footer": "wdio run ./wdio.conf.js --spec ./test/specs/footer.spec.js",
     "test:products": "wdio run ./wdio.conf.js --spec ./test/specs/products.spec.js",
     "download-driver": "node ./download-driver.js",
-    "report": "allure generate allure-results --clean && allure open"
+    "report": "allure generate allure-results --clean && allure open",
+    "test:checker": "wdio run ./wdio.conf.js --spec ./test/specs/check.spec.js"
   }
 }
